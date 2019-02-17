@@ -1,0 +1,1 @@
+In chach20.c gaan we de quarterround functie omitten. Dan voegen we een nieuwe functienaam toe in een vd header files en passen we de Makefile aan om m onze quarterround.s functie te laten herkennen. Daar schrijven we de functie en als alles goed is hebben we geen falende tests

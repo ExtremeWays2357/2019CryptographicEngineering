@@ -35,6 +35,13 @@ static uint32 rotate(uint32 a, int d)
 
 static void quarterround(uint32 *a, uint32 *b, uint32 *c, uint32 *d)
 {
+  /**
+   * Deze 12 lines gaan we dus in assembly schrijven en dan niet deze static void gebruiken, maar onze functie
+   * + geeft nog steeds een addition aan in c (aldus de ChaCha paper)
+   * ^ geeft een XOR aan in c
+   * & geeft een AND aan in c 
+   * rotate() roteert naar links met het tweede argument
+   */
   *a = *a + *b;
   *d = *d ^ *a;
   *d = rotate(*d, 16);
