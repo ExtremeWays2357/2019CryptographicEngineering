@@ -3,7 +3,6 @@
  * by Daniel J. Bernstein */
 
 #include <stdint.h>
-#include "chacha20.h"
 
 #define ROUNDS 20
 
