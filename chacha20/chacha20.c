@@ -89,14 +89,14 @@ static int crypto_core_chacha20(
   j15 = x15 = load_littleendian(in+  4);
 
   for (i = ROUNDS;i > 0;i -= 2) {
-    quarterround(&x0, &x4, &x8,&x12);
-    quarterround(&x1, &x5, &x9,&x13);
-    quarterround(&x2, &x6,&x10,&x14);
-    quarterround(&x3, &x7,&x11,&x15);
-    quarterround(&x0, &x5,&x10,&x15);
-    quarterround(&x1, &x6,&x11,&x12);
-    quarterround(&x2, &x7, &x8,&x13);
-    quarterround(&x3, &x4, &x9,&x14);
+    quarterround2(&x0, &x4, &x8,&x12);
+    quarterround2(&x1, &x5, &x9,&x13);
+    quarterround2(&x2, &x6,&x10,&x14);
+    quarterround2(&x3, &x7,&x11,&x15);
+    quarterround2(&x0, &x5,&x10,&x15);
+    quarterround2(&x1, &x6,&x11,&x12);
+    quarterround2(&x2, &x7, &x8,&x13);
+    quarterround2(&x3, &x4, &x9,&x14);
   }
 
   x0 += j0;

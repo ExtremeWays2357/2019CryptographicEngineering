@@ -39,8 +39,8 @@ lib:
 %.elf: %.o $(OBJS) $(LDSCRIPT)
 	$(LD) -o $(*).elf $(*).o $(OBJS) $(LDFLAGS) -l$(LIBNAME)
 
-%.o: %.c
-	$(CC) $(CFLAGS) -o $@ -c $<
+%.o: %.c 
+	$(CC) $(CFLAGS) -o $@ -c $<  
 
 clean:
 	find . -name \*.o -type f -exec rm -f {} \;
