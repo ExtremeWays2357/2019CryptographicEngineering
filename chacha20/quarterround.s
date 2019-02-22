@@ -10,7 +10,6 @@
 # .byte 0x2a
 # .nibble 0xf
 
-
 .text
 .global quarterround2
 .type quarterround2, %function
@@ -38,33 +37,26 @@ quarterround2:
 #  *b = *b ^ *c;
 #  *b = rotate(*b, 7);
 
-#Aldus conventions bevatten r0 t/m r3 de arguments van de call
-#ARM heeft geen ROL, dus simuleren we t met een LSL van de immediate ge(x)ord met een LSR van 32-immediate
-
+#According to conventions, r0 through r3 contain the arguments of the function call (so a, b, c and d respectively)
+#ARM does not contain a rotate-left instruction, so we simulate using a LSL of X and an LSR of 32-X. 
    add r0, r0, r1
    eor r3, r3, r0
-#   ror r3, r3, #16
    lsl r5, r3, #16
    eor r3, r5, r3, lsr #16
-#met 32-bit woroden is ROR16 hetzelfde als ROL16, maar dit werkt niet dus ik doe toch maar dit.
-
+   #could rotate ^ but for now, lets just keep shifting until it we have no regression faults.
+   
    add r2, r2, r3
    eor r1, r1, r2
-#   ror r1, r1, #12   
    lsl r5, r1, #12
    eor r1, r5, r1, lsr #20 
 
    add r0, r0, r1
    eor r3, r3, r0
-#   ror r3, r3, #8
    lsl r5, r3, #8
    eor r3, r5, r3, lsr #24
-#Bytepermute instruction hierboven?
-
 
    add r2, r2, r3
    eor r1, r1, r2
-#   ror r1, r1, #7
    lsl r5, r1, #7
    eor r1, r5, r1, lsr #25
 
