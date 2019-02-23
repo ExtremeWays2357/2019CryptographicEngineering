@@ -1,16 +1,5 @@
 .syntax unified
 .cpu cortex-m4
-
-.data
-#some globals, for example:
-#somedata:
-# .doubleword 0x123456789abcdef
-# .word 0x12345678
-# .halfword 0x1234
-# .byte 0x2a
-# .nibble 0xf
-
-.text
 .global quarterround2
 .type quarterround2, %function
 quarterround2:
@@ -42,27 +31,18 @@ quarterround2:
    add r0, r0, r1
    eor r3, r3, r0
    ror r3, r3, #16
-   #lsl r5, r3, #16
-   #eor r3, r5, r3, lsr #16
-   #could rotate ^ but for now, lets just keep shifting until it we have no regression faults.
    
    add r2, r2, r3
    eor r1, r1, r2
    ror r1, r1, #20
-   #lsl r5, r1, #12
-   #eor r1, r5, r1, lsr #20 
 
    add r0, r0, r1
    eor r3, r3, r0
    ror r3, r3, #24
-   #lsl r5, r3, #8
-   #eor r3, r5, r3, lsr #24
 
    add r2, r2, r3
    eor r1, r1, r2
    ror r1, r1, #25
-   #lsl r5, r1, #7
-   #eor r1, r5, r1, lsr #25
 
    # Finally, we restore the callee-saved register values and branch back.
    
