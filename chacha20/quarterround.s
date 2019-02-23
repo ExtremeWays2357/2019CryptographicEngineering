@@ -42,7 +42,7 @@ quarterround2:
 #Noël was being stupid, we can just rotate with 32-X instead of doing annoying shifts. Not used to having rotate instructions that are useful
    add r0, r0, r1
    eor r3, r3, r0
-   ror r3, r3, 16
+   ror r3, r3, #16
    #lsl r5, r3, #16
    #eor r3, r5, r3, lsr #16
    #could rotate ^ but for now, lets just keep shifting until it we have no regression faults.

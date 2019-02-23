@@ -33,6 +33,7 @@ static uint32 rotate(uint32 a, int d)
   return a | t;
 }
 
+extern void quarterround2(uint32 *a, uint32 *b, uint32 *c, uint32 *d);
 static void quarterround(uint32 *a, uint32 *b, uint32 *c, uint32 *d)
 {
   /**
