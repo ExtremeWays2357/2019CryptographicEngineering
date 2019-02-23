@@ -18,7 +18,6 @@ quarterround2:
     # Arguments are placed in r0 and r1, the return value should go in r0.
     # To be certain, we just push all of them onto the stack.
     push {r4-r12}
-
     #Execute code from quarterround function, merge later:
 
 #  *a = *a + *b;
@@ -66,5 +65,6 @@ quarterround2:
    #eor r1, r5, r1, lsr #25
 
    # Finally, we restore the callee-saved register values and branch back.
-    pop {r4-r12}
-    bx lr
+   
+   pop {r4-r12}
+   bx lr
