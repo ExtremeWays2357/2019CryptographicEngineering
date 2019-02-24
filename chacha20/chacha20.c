@@ -33,6 +33,7 @@ static uint32 rotate(uint32 a, int d)
   return a | t;
 }
 
+extern void fullround(uint32 *a);
 extern void quarterround2(uint32 *a, uint32 *b, uint32 *c, uint32 *d);
 static void quarterround(uint32 *a, uint32 *b, uint32 *c, uint32 *d)
 {
@@ -91,14 +92,15 @@ static int crypto_core_chacha20(
   j[15] = x[15] = load_littleendian(in+  4);
 
   for (i = ROUNDS;i > 0;i -= 2) {
+    fullround(x);
    // send_USART_str((unsigned char*) "\nBefore");
    // send_USART_bytes((unsigned long long )x0, 4);
-    quarterround2(&x[0], &x[4], &x[8],&x[12]);
+   //quarterround2(&x[0], &x[4], &x[8],&x[12]);
    // send_USART_str((unsigned char*) "\nAfter");
    // send_USART_bytes((unsigned long long )x0, 4);
-    quarterround2(&x[1], &x[5], &x[9],&x[13]);
-    quarterround2(&x[2], &x[6],&x[10],&x[14]);
-    quarterround2(&x[3], &x[7],&x[11],&x[15]);
+   // quarterround2(&x[1], &x[5], &x[9],&x[13]);
+   // quarterround2(&x[2], &x[6],&x[10],&x[14]);
+   // quarterround2(&x[3], &x[7],&x[11],&x[15]);
     quarterround2(&x[0], &x[5],&x[10],&x[15]);
     quarterround2(&x[1], &x[6],&x[11],&x[12]);
     quarterround2(&x[2], &x[7], &x[8],&x[13]);
