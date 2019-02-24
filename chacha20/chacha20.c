@@ -89,24 +89,20 @@ static int crypto_core_chacha20(
   j14 = x14 = load_littleendian(in+  0);
   j15 = x15 = load_littleendian(in+  4);
 
- // for (i = ROUNDS;i > 0;i -= 2) {
-    send_USART_str((unsigned char*) "\nBefore");
-    send_USART_bytes((unsigned char*)&x0, 4);
+  for (i = ROUNDS;i > 0;i -= 2) {
+   // send_USART_str((unsigned char*) "\nBefore");
+   // send_USART_bytes((unsigned long long )x0, 4);
     quarterround2(&x0, &x4, &x8,&x12);
-    send_USART_str((unsigned char*) "\nAfter");
-    send_USART_bytes((unsigned char*)&x0, 4);
-    //send_USART_str((unsigned char*) "\nBefore");
-    //send_USART_bytes((unsigned char*)&x1, 4);
+   // send_USART_str((unsigned char*) "\nAfter");
+   // send_USART_bytes((unsigned long long )x0, 4);
     quarterround(&x1, &x5, &x9,&x13);
-    //send_USART_str((unsigned char*) "\nAfter");
-    //send_USART_bytes((unsigned char*)&x1, 4);
     quarterround(&x2, &x6,&x10,&x14);
     quarterround(&x3, &x7,&x11,&x15);
     quarterround(&x0, &x5,&x10,&x15);
     quarterround(&x1, &x6,&x11,&x12);
     quarterround(&x2, &x7, &x8,&x13);
     quarterround(&x3, &x4, &x9,&x14);
-  //}
+  }
 
   x0 += j0;
   x1 += j1;
