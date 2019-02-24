@@ -29,7 +29,7 @@ quarterround2:
 #ARM does not contain a rotate-left instruction, so we simulate using a LSL of X and an LSR of 32-X. 
 #Noël was being stupid, we can just rotate with 32-X instead of doing annoying shifts. Not used to having rotate instructions that are useful
    ldr r4, [r0]
-   ldr r5, [r0, #4]
+   ldr r5, [r1]
    ldr r6, [r2]
    ldr r7, [r3]
 
