@@ -66,9 +66,10 @@ fullround:
    #load x14 and x15 to memory. 
    #Push r12 and r14 to SP without updating SP so we can pop r0 for address. Now we have the whole state in stack.
    POP {r14}
+   #Push r14 again to still have a state address on the stack
    PUSH {r14}
-   ldr r12, [r14, #52]
-   ldr r14, [r14, #56]
+   ldr r12, [r14, #56]
+   ldr r14, [r14, #60]
  
    #quarterround 3
    add r2, r2, r6
@@ -95,6 +96,9 @@ fullround:
    
    add r11, r11, r14, ROR #24
    eor r7, r7, r11
+  
+   #Full round 1 lijkt te kloppen
+
  
    #Now full round 2? 
    # quarterround2(&x[3], &x[4], &x[9],&x[14]);
@@ -129,6 +133,7 @@ fullround:
    add r10, r10, r14, ROR #24
    eor r5, r5, r10
    ROR r5, r5, #25
+ 
    #push x14 and x15, pop x12 and x13. We push SP but dont update the SP, so we can retrieve r12 and r14 immediately.
    SUB SP, #8
    STMDB SP, {r12, r14}
@@ -165,12 +170,18 @@ fullround:
    ROR r7, r7, #25
 
    #at this point we can store everything from r0-r14
-   STMDB SP, {r14} //==x13
+   STMDB SP, {r14}
    POP {r14}
    stm r14!, {r0-r12}
    SUB SP, #20
-   POP {r1,r2,r3,r4,r5} 
-   STM r14, {r10-r12}
+   #Hou deze pop structuur vooralsnog
+   POP {r5}
+   POP {r4}
+   POP {r6}
+   POP {r3}
+   POP {r6}
+
+   STM r14, {r4-r6}
   
    pop {r4-r12}
    pop {r14}
