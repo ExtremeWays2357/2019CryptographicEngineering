@@ -92,7 +92,8 @@ static int crypto_core_chacha20(
   j[15] = x[15] = load_littleendian(in+  4);
 
   for (i = ROUNDS;i > 0;i -= 2) {
-    fullround(x);
+    //We shoudl proably rearrange some of the quarter rounds.
+      fullround(x);
    // send_USART_str((unsigned char*) "\nBefore");
    // send_USART_bytes((unsigned long long )x0, 4);
    //quarterround2(&x[0], &x[4], &x[8],&x[12]);
@@ -101,10 +102,10 @@ static int crypto_core_chacha20(
    // quarterround2(&x[1], &x[5], &x[9],&x[13]);
    // quarterround2(&x[2], &x[6],&x[10],&x[14]);
    // quarterround2(&x[3], &x[7],&x[11],&x[15]);
-    quarterround2(&x[0], &x[5],&x[10],&x[15]);
-    quarterround2(&x[1], &x[6],&x[11],&x[12]);
-    quarterround2(&x[2], &x[7], &x[8],&x[13]);
-    quarterround2(&x[3], &x[4], &x[9],&x[14]);
+  //  quarterround2(&x[3], &x[4], &x[9],&x[14]);//reorder this in assembly to immediately execute after the first full round, so we can keep x14 and x15 in memory
+   // quarterround2(&x[0], &x[5],&x[10],&x[15]);
+    //quarterround2(&x[1], &x[6],&x[11],&x[12]);
+   // quarterround2(&x[2], &x[7], &x[8],&x[13]);
   }
 
   x[0] += j[0];
