@@ -130,8 +130,9 @@ fullround:
    eor r5, r5, r10
    ROR r5, r5, #25
    #push x14 and x15, pop x12 and x13. We push SP but dont update the SP, so we can retrieve r12 and r14 immediately.
-   PUSH {r12, r14}
    SUB SP, #8
+   PUSH {r12, r14}
+   ADD SP, #12 
    POP {r12, r14}
    # The easiest way I can see this happen is simply to push r12 and r14, then decrease the SP by 8 and pop into r12 and r14 again. Later we can modify the SP to reflect.  
 
@@ -166,11 +167,11 @@ fullround:
 
    #at this point we can store everything from r0-r14
    PUSH {r14} //==x13
-   ADD SP, #8
+   SUB SP, #8
    POP {r14}
    stm r14!, {r0-r12}
-   SUB SP, #16
-   POP {r10, r11, r12}
+   SUB SP, #12
+   POP {r1,r2,r3,r4,r5} 
    STM r14, {r10-r12}
   
    pop {r4-r12}
