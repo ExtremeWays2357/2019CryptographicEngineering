@@ -66,8 +66,9 @@ fullround:
    #load x14 and x15 to memory. 
    #Push r12 and r14 to SP without updating SP so we can pop r0 for address. Now we have the whole state in stack.
    POP {r14}
+   PUSH {r14}
    ldr r12, [r14, #52]
-   ldr r14, [r14, #52]
+   ldr r14, [r14, #56]
  
    #quarterround 3
    add r2, r2, r6
@@ -130,7 +131,7 @@ fullround:
    ROR r5, r5, #25
    #push x14 and x15, pop x12 and x13. We push SP but dont update the SP, so we can retrieve r12 and r14 immediately.
    PUSH {r12, r14}
-   SUB SP, #16
+   SUB SP, #8
    POP {r12, r14}
    # The easiest way I can see this happen is simply to push r12 and r14, then decrease the SP by 8 and pop into r12 and r14 again. Later we can modify the SP to reflect.  
 
