@@ -8,8 +8,8 @@ fullround:
     # To be certain, we just push all of them onto the stack.
     push {r14}
     push {r4-r12}
-    #Execute code from fullround function, merge later:
- #r0 will contain the whole array.
+#Execute code from fullround function, merge later:
+#r0 will contain the whole array.
 #  *a = *a + *b;
 #  *d = *d ^ *a;
 #  *d = rotate(*d, 16);
@@ -30,7 +30,7 @@ fullround:
 #Use the remaining 2 to alternately hold x[12] through x[15] and the loop iterator (we probably omit this with loop unrolling).
 #Each quarterround operates only on 1 reg in the range x[12] through x[15].
 
-
+   PUSH {r0}
    ldm r0, {r0-r12, r14}
 #    Full round nr 1
 #    quarterround2(&x[0], &x[4], &x[8],&x[12]);
@@ -39,7 +39,7 @@ fullround:
 #    quarterround2(&x[3], &x[7],&x[11],&x[15]);
    add r0, r0, r4
    eor r12, r12, r0
-   
+  
    add r8, r8, r12, ROR #16
    eor r4, r4, r8
 
@@ -62,13 +62,13 @@ fullround:
    add r9, r9, r14, ROR #24
    eor r5, r5, r9
  
-   push {r12}
-   push {r14} 
-   #load x14 and x15 to memory. Afaik we cant load multiple with offset. We can increment r0 in the first ldm but then we also have to decrement in the future
-   ldr r12, [r0, #52]
-   ldr r14, [r0, #56]
+   STMDB SP, {r12, r14}
+   #load x14 and x15 to memory. 
+   #Push r12 and r14 to SP without updating SP so we can pop r0 for address. Now we have the whole state in stack.
+   POP {r14}
+   ldr r12, [r14, #52]
+   ldr r14, [r14, #52]
  
-
    #quarterround 3
    add r2, r2, r6
    eor r12, r12, r2
@@ -129,10 +129,9 @@ fullround:
    eor r5, r5, r10
    ROR r5, r5, #25
    #push x14 and x15, pop x12 and x13. We push SP but dont update the SP, so we can retrieve r12 and r14 immediately.
-   STMDB SP, {r12, r14}
-   POP {r14}
-   POP {r12}   
+   PUSH {r12, r14}
    SUB SP, #16
+   POP {r12, r14}
    # The easiest way I can see this happen is simply to push r12 and r14, then decrease the SP by 8 and pop into r12 and r14 again. Later we can modify the SP to reflect.  
 
  
@@ -165,13 +164,14 @@ fullround:
    ROR r7, r7, #25
 
    #at this point we can store everything from r0-r14
-   stm r0, {r0-r12, r14}
-   POP {r1, r2}
-   #This was popped before, but we didnt update the SP so we update just in case.
-   POP {r4, r5}
-   str r1, [r0, #52]
-   str r2, [r0, #56]
-   
+   PUSH {r14} //==x13
+   ADD SP, #8
+   POP {r14}
+   stm r14!, {r0-r12}
+   SUB SP, #16
+   POP {r10, r11, r12}
+   STM r14, {r10-r12}
+  
    pop {r4-r12}
    pop {r14}
    bx lr
