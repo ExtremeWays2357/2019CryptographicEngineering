@@ -92,8 +92,7 @@ static int crypto_core_chacha20(
   j[15] = x[15] = load_littleendian(in+  4);
 
   for (i = ROUNDS;i > 0;i -= 2) {
-    //We shoudl proably rearrange some of the quarter rounds.
-      fullround(x);
+   //   fullround(x);
    // send_USART_str((unsigned char*) "\nBefore");
    // send_USART_bytes((unsigned long long )x0, 4);
    //quarterround2(&x[0], &x[4], &x[8],&x[12]);
