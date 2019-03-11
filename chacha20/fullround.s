@@ -163,6 +163,7 @@ fullround:
 
    add r1, r1, r6, ROR #20
    eor r12, r1, r12, ROR #16
+   ROR r12, r12, #24
 
    add r11, r11, r12, ROR #24
    eor r6, r11, r6, ROR #20
@@ -177,15 +178,12 @@ fullround:
 
    add r2, r2, r7, ROR #20
    eor r14, r2, r14, ROR #16
+   ROR r14, r14, #24
 
    add r8, r8, r14, ROR #24
    eor r7, r8, r7, ROR #20
    ROR r7, r7, #25
    
-   #doe nogmaals r12/r14
-   ROR r12, r12, #24
-   ROR r14, r14, #24
-
    #at this point we can store everything from r0-r14
    STMDB SP, {r14}
    POP {r14}
