@@ -31,7 +31,9 @@ fullround:
 #Each quarterround operates only on 1 reg in the range x[12] through x[15].
 
    PUSH {r0}
-   ldm r0, {r0-r12, r14}
+#   ldm r0, {r0-r12, r14}
+   ldm r0, {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r14}
+#
 #    Full round nr 1
 #    quarterround2(&x[0], &x[4], &x[8],&x[12]);
 #    quarterround2(&x[1], &x[5], &x[9],&x[13]);
@@ -117,7 +119,7 @@ fullround:
    eor r12, r12, r3
 
    add r9, r9, r12, ROR #24
-   add r4, r4, r9
+   eor r4, r4, r9
    ROR r4, r4, #25
 
    #quarterround 2 of full round 2
@@ -159,7 +161,7 @@ fullround:
    add r2, r2, r7, ROR #25
    eor r14, r14, r2
    
-   add r8, r14, r14, ROR #16
+   add r8, r8, r14, ROR #16
    eor r7, r7, r8
 
    add r2, r2, r7, ROR #20
@@ -180,8 +182,9 @@ fullround:
    POP {r6}
    POP {r3}
    POP {r6}
-
-   STM r14, {r4-r6}
+   
+   #Now pushing r3-r5 instead of r4-r6...
+   STM r14, {r3-r5}
   
    pop {r4-r12}
    pop {r14}
