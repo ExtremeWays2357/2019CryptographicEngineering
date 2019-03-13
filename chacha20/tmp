@@ -1,5 +1,5 @@
-SP      STack size
-0	0		
+SP      Stack size
+g	0		
 4	4		r0
 4	12		r0, x12, x13
 0	8		.., x12, x13
@@ -10,4 +10,3 @@ SP      STack size
 4	20		r0, x13, ..., x14, x15
 0	20		.., x13, ..., x14, x15
 20	20		.., x13, ..., x14, x15
-Lijkt echt te kloppen 	

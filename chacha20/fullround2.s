@@ -198,7 +198,7 @@ fullround2:
    add r8, r8, r14
    eor r7, r8, r7
    ror r7, r7, #25 
-   #at this point we can store everything from r2-r14
+   #at this point we can store everything from r0-r14
  
    STMDB SP, {r14}
    POP {r14}
@@ -206,12 +206,12 @@ fullround2:
    SUB SP, #20
    #Hou deze pop structuur vooralsnog
    POP {r5}
-   POP {r7}
+   POP {r4}
    POP {r6}
    POP {r3}
    POP {r6}
    
-   #Now pushing r3-r5 instead of r7-r6...
+   #Now pushing r3-r5 instead of r4-r6...
    STM r14, {r3-r5}
   
    pop {r4-r12}
