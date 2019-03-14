@@ -3,13 +3,11 @@
 .global fullround2
 .type fullround2, %function
 fullround2:
-    # Remember the ABI: we must not destroy the values in r4 to r52.
-    # Arguments are placed in r4 and r5, the return value should go in r4.
-    # To be certain, we just push all of them onto the stack.
-    push {r14}
-    push {r4-r12}
+  push {r14}
+  push {r4-r12}
+
 #Execute code from fullround2 function, merge later:
-#r0 will contain the whole array.
+#r0 contains the address of the first element of the state.
 #  *a = *a + *b;
 #  *d = *d ^ *a;
 #  *d = rotate(*d, 16);
@@ -26,12 +24,12 @@ fullround2:
 #  *b = *b ^ *c;
 #  *b = rotate(*b, 7);
 
-#Load q[0] through q[11] in the registers and keep them there for all rounds.
 #Use the remaining 2 to alternately hold x[12] through x[15] and the loop iterator (we probably omit this with loop unrolling).
 #Each quarterround operates only on 1 reg in the range x[12] through x[15].
 
+#Push r0 on the stack to remember the address to store our result in. Laod the first 14 segments of the state
    PUSH {r0}
-#   ldm r0, {r0-r12, r14}
+   ldm r0, {r0-r12, r14}
    ldm r0, {r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r14}
 #
 #    Full round nr 1
@@ -73,14 +71,17 @@ fullround2:
    eor r5, r9, r5
    ror r5, r5, #25
 
-
-   #Na quarterround 2 x12 en x13 wisselen met x14 en x15
+   #After quarterround 2, we switch x12 and x13 with x14 and x15 (while also keeping the state-address on the stack)
+   
+   #Store r12, r14 without incrementing the SP. This allows us to pop from SP to return the state-address. 
    STMDB SP, {r12, r14}
+   
    #load x14 and x15 to memory. 
-   #Push r12 and r14 to SP without updating SP so we can pop r1 for address. Now we have the whole state in stack.
    POP {r14}
-   #Push r14 again to still have a state address on the stack
+   
+   #Push r14 again to still have the state-address on the stack
    PUSH {r14}
+   #Load from the state address with offset. #56 = 'r0' + 14n and #60 = 'r0' + 15n, i.e. this SHOULD load x14 and x15 from the state.
    ldr r12, [r14, #56]
    ldr r14, [r14, #60]
  
@@ -158,13 +159,11 @@ fullround2:
    eor r5, r10, r5
    ror r5, r5, #25
 
-   #Wissel weer om   
-   #push x14 and x15, pop x12 and x13. We push SP but dont update the SP, so we can retrieve r12 and r14 immediately.
+   #Switch x14 and x15 for x12 and x13 again. We have to play a bit with the SP to be able to push/pop at the correct locations 
    SUB SP, #8
    STMDB SP, {r12, r14}
    POP {r12, r14}
-   # The easiest way I can see this happen is simply to push r12 and r14, then decrease the SP by 8 and pop into r12 and r14 again. Later we can modify the SP to reflect.  
-
+  
    #quarterround 3 of full round 2
    add r1, r6, r1
    eor r12, r1, r12
@@ -198,22 +197,24 @@ fullround2:
    add r8, r8, r14
    eor r7, r8, r7
    ror r7, r7, #25 
-   #at this point we can store everything from r0-r14
- 
+  
+   #at this point we can store everything from r0-r12, but we still need to laod the state-address to store to.
    STMDB SP, {r14}
    POP {r14}
    stm r14!, {r0-r12}
+   #Set stack pointer to the end of the stack, to pop everything gracefully.
    SUB SP, #20
-   #Hou deze pop structuur vooralsnog
+   #We pop twice into r6 just to increase the SP. Ergo: r3-r4-r5 will contain x13-x14-x15
    POP {r5}
    POP {r4}
    POP {r6}
    POP {r3}
    POP {r6}
    
-   #Now pushing r3-r5 instead of r4-r6...
+   #We stored to r14 with writeback the previous time around, so we can store multiple without offset here.
    STM r14, {r3-r5}
-  
+   
+   #pop callee-saved registers
    pop {r4-r12}
    pop {r14}
    bx lr
