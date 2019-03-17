@@ -1,8 +1,8 @@
 .syntax unified
 .cpu cortex-m4
-.global quarterround2
-.type quarterround2, %function
-quarterround2:
+.global quarterround3
+.type quarterround3, %function
+quarterround3:
     # Remember the ABI: we must not destroy the values in r4 to r52.
     # Arguments are placed in r4 and r5, the return value should go in r4.
     # To be certain, we just push all of them onto the stack.
@@ -29,9 +29,9 @@ quarterround2:
 #ARM does not contain a rotate-left instruction, so we simulate using a LSL of X and an LSR of 32-X. 
 #Noël was being stupid, we can just rotate with 32-X instead of doing annoying shifts. Not used to having rotate instructions that are useful
    ldr r4, [r0]
-   ldr r5, [r1]
-   ldr r6, [r2]
-   ldr r7, [r3]
+   ldr r5, [r0, #16]
+   ldr r6, [r0, #32]
+   ldr r7, [r0, #48]   
 
    add r4, r4, r5
    eor r7, r7, r4
@@ -50,11 +50,10 @@ quarterround2:
    ror r5, r5, #25
 
    # Finally, we restore the callee-saved register values and branch back.
-
    str r4, [r0]
-   str r5, [r1]
-   str r6, [r2]
-   str r7, [r3]
+   str r5, [r0, #16]
+   str r6, [r0, #32]
+   str r7, [r0, #48]   
    
    pop {r4-r12}
    bx lr

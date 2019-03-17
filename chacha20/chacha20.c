@@ -33,9 +33,7 @@ static uint32 rotate(uint32 a, int d)
   return a | t;
 }
 
-extern void fullround(uint32 *a);
-extern void fullround2(uint32 *a);
-extern void quarterround2(uint32 *a, uint32 *b, uint32 *c, uint32 *d);
+extern void fullround3(uint32 *a);
 static void quarterround(uint32 *a, uint32 *b, uint32 *c, uint32 *d)
 {
   /**
@@ -93,9 +91,10 @@ static int crypto_core_chacha20(
   j[15] = x[15] = load_littleendian(in+  4);
 
   for (i = ROUNDS;i > 0;i -= 2) {
-    send_USART_str((unsigned char*) "\nBefore");
-    send_USART_bytes((unsigned char*) x, 64);
-    fullround2(x);
+    //send_USART_str((unsigned char*) "\nBefore");
+    //send_USART_bytes((unsigned char*) x, 64);
+    fullround3(x);
+    //quarterround3(x);
 //    quarterround(&x[0], &x[4], &x[8],&x[12]);
 //    quarterround(&x[1], &x[5], &x[9],&x[13]);
 //    quarterround(&x[2], &x[6],&x[10],&x[14]);
@@ -104,8 +103,8 @@ static int crypto_core_chacha20(
 //    quarterround(&x[0], &x[5],&x[10],&x[15]);
 //    quarterround(&x[1], &x[6],&x[11],&x[12]);
 //    quarterround(&x[2], &x[7], &x[8],&x[13]);
-    send_USART_str((unsigned char*) "\nAfter");
-    send_USART_bytes((unsigned char* )x, 64);
+//    send_USART_str((unsigned char*) "\nAfter");
+//    send_USART_bytes((unsigned char* )x, 64);
   }
 
   x[0] += j[0];
