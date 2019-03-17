@@ -50,7 +50,7 @@ unsigned char nonce[CHACHA20_NONCEBYTES] = {
   0xa8, 0xc8, 0x48, 0x1f, 0xf2, 0x6b, 0x13, 0x86};
 
 int main(void)
-{
+{ 
   clock_setup();
   gpio_setup();
   usart_setup(115200);
