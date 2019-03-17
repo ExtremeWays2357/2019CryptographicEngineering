@@ -6,31 +6,8 @@ fullround3:
   push {r14}
   push {r4-r12}
 
-#Execute code from fullround3 function, merge later:
-#r0 contains the address of the first element of the state.
-#  *a = *a + *b;
-#  *d = *d ^ *a;
-#  *d = rotate(*d, 16);
+ ldm r0, {r1-r12, r14}
 
-#  *c = *c + *d;
-#  *b = *b ^ *c;
-#  *b = rotate(*b, 12);
-
-#  *a = *a + *b;
-#  *d = *d ^ *a;
-#  *d = rotate(*d, 8);
-
-#  *c = *c + *d;
-#  *b = *b ^ *c;
-#  *b = rotate(*b, 7);
-
-   ldm r0, {r1-r12, r14}
-#
-#    Full round nr 1
-#    quarterround2(&x[0], &x[4], &x[8],&x[12]);
-#    quarterround2(&x[1], &x[5], &x[9],&x[13]);
-#    quarterround2(&x[2], &x[6],&x[10],&x[14]);
-#    quarterround2(&x[3], &x[7],&x[11],&x[15]);
   #fr 1 qr 1
    add r1, r5, r1
    eor r14, r1, r14
