@@ -98,18 +98,16 @@ fullround3:
   #qr 1
    add r1, r1, r6, ror #25
    eor r14, r1, r14, ror #24
-   ror r14, r14, #16
 
-   add r11, r11, r14
+   add r11, r11, r14, ror #16
    eor r6, r11, r6, ror #25
-   ror r6, r6, #20
 
-   add r1, r6, r1
-   eor r14, r1, r14
+   add r1, r1, r6, ror #20
+   eor r14, r1, r14, ror #16
    ror r14, r14, #24
 
    add r11, r11, r14
-   eor r6, r11, r6
+   eor r6, r11, r6, ror #20
    ror r6, r6, #25
 
   
@@ -119,18 +117,16 @@ fullround3:
    #qr 2
    add r4, r4, r5, ror #25
    eor r14, r4, r14, ror #24
-   ror r14, r14, #16
 
-   add r10, r10, r14
+   add r10, r10, r14, ror #16
    eor r5, r10, r5, ror #25
-   ror r5, r5, #20
 
-   add r4, r5, r4
-   eor r14, r4, r14
+   add r4, r4, r5, ror #20
+   eor r14, r4, r14, ror #16
    ror r14, r14, #24
 
    add r10, r10, r14
-   eor r5, r10, r5
+   eor r5, r10, r5, ror #20
    ror r5, r5, #25
 
  
@@ -140,18 +136,16 @@ fullround3:
   #qr 3
    add r3, r3, r8, ror #25
    eor r14, r3, r14, ror #24
-   ror r14, r14, #16
 
-   add r9, r9, r14
+   add r9, r9, r14, ror #16
    eor r8, r9, r8, ror #25
-   ror r8, r8, #20
 
-   add r3, r8, r3
-   eor r14, r3, r14
+   add r3, r3, r8, ror #20
+   eor r14, r3, r14, ror #16
    ror r14, r14, #24
 
    add r9, r9, r14
-   eor r8, r9, r8
+   eor r8, r9, r8, ror #20
    ror r8, r8, #25 
  
    str r14, [r0, #52]
@@ -160,18 +154,16 @@ fullround3:
   #qr 4
    add r2, r2, r7, ror #25
    eor r14, r2, r14, ror #24
-   ror r14, r14, #16
 
-   add r12, r12, r14
+   add r12, r12, r14, ror #16
    eor r7, r12, r7, ror #25
-   ror r7, r7, #20
 
-   add r2, r7, r2
-   eor r14, r2, r14
+   add r2, r2, r7, ror #20
+   eor r14, r2, r14, ror #16
    ror r14, r14, #24
 
    add r12, r12, r14
-   eor r7, r12, r7
+   eor r7, r12, r7, ror #20
    ror r7, r7, #25 
   
  
