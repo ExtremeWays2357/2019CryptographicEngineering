@@ -51,19 +51,15 @@ fullround3:
   #qr 2
    add r2, r6, r2
    eor r14, r2, r14
-   ror r14, r14, #16
 
-   add r10, r10, r14
+   add r10, r10, r14, ror #16
    eor r6, r10, r6
-   ror r6, r6, #20
 
-   add r2, r6, r2
-   eor r14, r2, r14
-   ror r14, r14, #24
+   add r2, r2, r6, ror #20
+   eor r14, r2, r14, ror #16
 
-   add r10, r10, r14
-   eor r6, r10, r6
-   ror r6, r6, #25
+   add r10, r10, r14, ror #24
+   eor r6, r10, r6, ror #20
 
    str r14, [r0, #52]
    ldr r14, [r0, #56]
@@ -71,49 +67,41 @@ fullround3:
   #qr 3
    add r3, r7, r3
    eor r14, r3, r14
-   ror r14, r14, #16
 
-   add r11, r11, r14
+   add r11, r11, r14, ror #16
    eor r7, r11, r7
-   ror r7, r7, #20
 
-   add r3, r7, r3
-   eor r14, r3, r14
-   ror r14, r14, #24
+   add r3, r3, r7, ror #20
+   eor r14, r3, r14, ror #16
 
-   add r11, r11, r14
-   eor r7, r11, r7
-   ror r7, r7, #25
+   add r11, r11, r14, ror #24
+   eor r7, r11, r7, ror #20
 
 
    str r14, [r0, #56]
    ldr r14, [r0, #60]
-  #qr 4
+  
+#qr 4
    add r4, r8, r4
    eor r14, r4, r14
-   ror r14, r14, #16
 
-   add r12, r12, r14
+   add r12, r12, r14, ror #16
    eor r8, r12, r8
-   ror r8, r8, #20
 
-   add r4, r8, r4
-   eor r14, r4, r14
-   ror r14, r14, #24
+   add r4, r4, r8, ror #20
+   eor r14, r4, r14, ror #16
 
-   add r12, r12, r14
-   eor r8, r12, r8
-   ror r8, r8, #25
-
+   add r12, r12, r14, ror #24
+   eor r8, r12, r8, ror #20
 
   #fr 2
   #qr 1
-   add r1, r6, r1
-   eor r14, r1, r14
+   add r1, r1, r6, ror #25
+   eor r14, r1, r14, ror #24
    ror r14, r14, #16
 
    add r11, r11, r14
-   eor r6, r11, r6
+   eor r6, r11, r6, ror #25
    ror r6, r6, #20
 
    add r1, r6, r1
@@ -130,7 +118,7 @@ fullround3:
 
    #qr 2
    add r4, r4, r5, ror #25
-   eor r14, r4, r14
+   eor r14, r4, r14, ror #24
    ror r14, r14, #16
 
    add r10, r10, r14
@@ -150,12 +138,12 @@ fullround3:
    ldr r14, [r0, #52]
 
   #qr 3
-   add r3, r8, r3
-   eor r14, r3, r14
+   add r3, r3, r8, ror #25
+   eor r14, r3, r14, ror #24
    ror r14, r14, #16
 
    add r9, r9, r14
-   eor r8, r9, r8
+   eor r8, r9, r8, ror #25
    ror r8, r8, #20
 
    add r3, r8, r3
@@ -170,12 +158,12 @@ fullround3:
    ldr r14, [r0, #48]
 
   #qr 4
-   add r2, r7, r2
+   add r2, r2, r7, ror #25
    eor r14, r2, r14, ror #24
    ror r14, r14, #16
 
    add r12, r12, r14
-   eor r7, r12, r7
+   eor r7, r12, r7, ror #25
    ror r7, r7, #20
 
    add r2, r7, r2
