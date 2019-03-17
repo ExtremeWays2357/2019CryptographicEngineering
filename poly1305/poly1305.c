@@ -104,9 +104,10 @@ int crypto_onetimeauth_poly1305(unsigned char *out,const unsigned char *in,unsig
   r[14] = k[14];
   r[15] = k[15] & 15;
   r[16] = 0;
+  //Convert r to radix 2^26
 
   for (j = 0;j < 17;++j) {
-      h[j] = 0;
+      h[j] = 0;//Convert h to radix 2^26
   }
 
   while (inlen > 0) {
@@ -117,6 +118,10 @@ int crypto_onetimeauth_poly1305(unsigned char *out,const unsigned char *in,unsig
 	c[j] = in[j];
     }
     c[j] = 1;
+
+    /**
+     * Convert c to radix 2^26 in a new variable
+     * */
     in += j; inlen -= j;
     add(h,c);
     mulmod(h,r);
@@ -128,7 +133,9 @@ int crypto_onetimeauth_poly1305(unsigned char *out,const unsigned char *in,unsig
       c[j] = k[j + 16];
   }
   c[16] = 0;
+  //convert c to radix 2^26 once more
   add(h,c);
+  //convert h back to bytearray
   for (j = 0;j < 16;++j){
       out[j] = h[j];
   }
