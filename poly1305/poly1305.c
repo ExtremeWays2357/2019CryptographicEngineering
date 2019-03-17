@@ -18,23 +18,72 @@ static void add(unsigned int h[17],const unsigned int c[17])
   }
 }
 
+/**
+ * een add functie in radix 26. Volgens mij hoeven we niet op de laatste carry te letten omdat c altijd kleiner is
+ * dan 2^129, zoals ook in t paper staat. Dan kan de laatste nooit een carry bit genereren. 
+ */
+static void add26(unsigned int h[5],const unsigned int c[5])
+{
+  unsigned int j;
+  unsigned int u;
+  u = 0;
+  for (j = 0;j < 5;++j) {
+      u += h[j] + c[j]; 
+      h[j] = u & 67108864; 
+      u >>= 26; 
+  }
+}
+
 static void squeeze(unsigned int h[17])
 {
   unsigned int j;
   unsigned int u;
   u = 0;
   for (j = 0;j < 16;++j) { 
-      u += h[j]; h[j] = u & 255; 
+      u += h[j]; 
+      h[j] = u & 255; 
       u >>= 8;
   }
-  u += h[16]; h[16] = u & 3;
+  u += h[16]; 
+  h[16] = u & 3;
+  //Als u een carry had, dan is derde bit van u een 1. Daarom kunnen we rotaten naar rechts met 2 om die carry bit te krijgen, en vermenigvuldigen we met 5 om +5 te doen op de laagste.
   u = 5 * (u >> 2);
  
   for (j = 0;j < 16;++j) { 
-      u += h[j]; h[j] = u & 255; 
+      u += h[j]; 
+      h[j] = u & 255; 
       u >>= 8;
   }
   u += h[16]; h[16] = u;
+}
+
+/**
+ * een shell voor een squeeze in radix 26. Dit voegt carries toe bij elkaar oid. Ik denk dat t pas belangrijk is om een werkende sqeeze te hebben wanneer we een werkende mult hebben.
+ */
+static void squeeze26(unsigned int h[5])
+{
+  unsigned int j;
+  unsigned int u;
+  u = 0;
+  for (j = 0;j < 4;++j) { 
+      u += h[j]; 
+      h[j] = u & 67108864; 
+      u >>= 26;
+  }
+
+  //Deze laatste stap begrijp ik dus echt voor geen bal. Omdat we in radix 26 werken kunnen we de eerste 2 instructies volgens mij gewoon in de loop pleuren, maar die laatste is ??????????
+  u += h[4]; 
+  h[4] = u & 67108864;
+  // Dus wat de actual fuck doet dit???
+  // Als u een (of meerdere) carry had, dan is bit 27 en hoger mogelijk een 1.. Daarom kunnen we rotaten naar rechts met 26 om die carry bits te krijgen, en vermenigvuldigen we met 5 omdat
+  // dat ons reductiealgoritme is oid. Die voegen we dan toe bij de LSB van onze state.
+  u = 5 * (u >> 26);
+ 
+  for (j = 0;j < 5;++j) { 
+      u += h[j]; 
+      h[j] = u & 67108864; 
+      u >>= 26;
+  }
 }
 
 static const unsigned int minusp[17] = {
@@ -56,7 +105,9 @@ static void freeze(unsigned int h[17])
 
   }
 }
-
+/**
+ * Dit kunnen we niet simpel omschrijven, we moeten gewoon eigen multiplication arithmic gaan schrijven voor 2^26 multiplicatie :(
+ */
 static void mulmod(unsigned int h[17],const unsigned int r[17])
 {
   unsigned int hr[17];
@@ -79,35 +130,35 @@ static void mulmod(unsigned int h[17],const unsigned int r[17])
   }
   squeeze(h);
 }
-
+//een van de conversies faalt. Mogelijk allebei
 static void convert_to_radix26(unsigned int source[17], unsigned int dest[5]){
 	//Assumption: only 8 lowest bits from source array are used.
-	dest[0] += (source[0]);
+	dest[0]  = (source[0]);
 	dest[0] += (source[1] >> 8);
 	dest[0] += (source[2] >> 16);
 	dest[0] += (source[3] >> 24) & 3; //Only care about 2 least significant bits
 
-	dest[1] += (source[3] << 2);
+	dest[1]  = (source[3] << 2);
 	dest[1] += (source[4] >> 6);
 	dest[1] += (source[5] >> 14);
 	dest[1] += (source[6] >> 22) & 15;//Only care about 4 least significant bits
 
-	dest[2] += (source[6] << 4);
+	dest[2]  = (source[6] << 4);
 	dest[2] += (source[7] >> 4);
 	dest[2] += (source[8] >> 12);
 	dest[2] += (source[9] >> 20) & 63;//Only care about 6 least significant bits
 	
-	dest[3] += (source[9] << 6);
+	dest[3]  = (source[9] << 6);
 	dest[3] += (source[10] >> 2);
 	dest[3] += (source[11] >> 10);
 	dest[3] += (source[12] >> 18);
 
-	dest[4] += (source[13]);
+	dest[4]  = (source[13]);
 	dest[4] += (source[14] >> 8);
 	dest[4] += (source[15] >> 16);
 	dest[4] += (source[16] >> 24) & 3;//only care about 2 least significant bits
 }
-
+//volgens mij is dit 100% ruk, van rotatierichting tot de AND-values. Volgens mij moet alles de andere kant op.
 static void convert_to_bytearray(unsigned int source[5], unsigned int dest[17]){
 	dest[0] =  (source[0]) & 255;
 	dest[1] =  (source[0] << 8 ) & 255;
@@ -121,7 +172,7 @@ static void convert_to_bytearray(unsigned int source[5], unsigned int dest[17]){
 	dest[7] =  (source[2] << 4 ) & 255;
 	dest[8] =  (source[2] << 12) & 255;
 	dest[9] =  (source[2] << 20) & 63;//only care about 6 bits
-	dest[9]+=  (source[3] >> 6 ) & 192;//only care about 2 bits
+	dest[9] += (source[3] >> 6 ) & 192;//only care about 2 bits
 	dest[10]=  (source[3] << 2 ) & 255;
 	dest[11]=  (source[3] << 10) & 255;
 	dest[12]=  (source[3] << 18) & 255;
@@ -136,7 +187,8 @@ int crypto_onetimeauth_poly1305(unsigned char *out,const unsigned char *in,unsig
   unsigned int j;
   unsigned int r[17];
   unsigned int h[17];
-  //unsigned int h[5]
+  unsigned int tmp[5];
+  unsigned int tmp2[5];
   unsigned int c[17];
 
   r[0] = k[0];
@@ -161,6 +213,8 @@ int crypto_onetimeauth_poly1305(unsigned char *out,const unsigned char *in,unsig
   for (j = 0;j < 17;++j) {
       h[j] = 0;//Convert h to radix 2^26
   }
+  //convert_to_radix26(h, tmp);
+  //convert_to_bytearray(tmp, h);
 
   /**
    * for (j = 0; j < 5; j++){
@@ -174,6 +228,7 @@ int crypto_onetimeauth_poly1305(unsigned char *out,const unsigned char *in,unsig
     }
     for (j = 0;(j < 16) && (j < inlen);++j) {
 	c[j] = in[j];
+	//Merk op dat j[16] altijd <= 1 is. Dat betekent dat is kleiner is dan 2^129
     }
     c[j] = 1;
 
@@ -181,6 +236,9 @@ int crypto_onetimeauth_poly1305(unsigned char *out,const unsigned char *in,unsig
      * Convert c to radix 2^26 in a new variable
      * */
     in += j; inlen -= j;
+    
+    convert_to_radix26(h, tmp);
+    convert_to_bytearray(tmp, h);
     add(h,c);
     mulmod(h,r);
   }
