@@ -90,7 +90,7 @@ static int crypto_core_chacha20(
   j[14] = x[14] = load_littleendian(in+  0);
   j[15] = x[15] = load_littleendian(in+  4);
 
-  for (i = ROUNDS;i > 0;i -= 2) {
+//  for (i = ROUNDS;i > 0;i -= 10) {
     //send_USART_str((unsigned char*) "\nBefore");
     //send_USART_bytes((unsigned char*) x, 64);
     fullround3(x);
@@ -105,7 +105,7 @@ static int crypto_core_chacha20(
 //    quarterround(&x[2], &x[7], &x[8],&x[13]);
 //    send_USART_str((unsigned char*) "\nAfter");
 //    send_USART_bytes((unsigned char* )x, 64);
-  }
+ // }
 
   x[0] += j[0];
   x[1] += j[1];
