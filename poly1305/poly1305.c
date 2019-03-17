@@ -12,7 +12,9 @@ static void add(unsigned int h[17],const unsigned int c[17])
   unsigned int u;
   u = 0;
   for (j = 0;j < 17;++j) {
-      u += h[j] + c[j]; h[j] = u & 255; u >>= 8; 
+      u += h[j] + c[j]; 
+      h[j] = u & 255; 
+      u >>= 8; 
   }
 }
 
@@ -22,13 +24,15 @@ static void squeeze(unsigned int h[17])
   unsigned int u;
   u = 0;
   for (j = 0;j < 16;++j) { 
-      u += h[j]; h[j] = u & 255; u >>= 8;
+      u += h[j]; h[j] = u & 255; 
+      u >>= 8;
   }
   u += h[16]; h[16] = u & 3;
   u = 5 * (u >> 2);
  
   for (j = 0;j < 16;++j) { 
-      u += h[j]; h[j] = u & 255; u >>= 8;
+      u += h[j]; h[j] = u & 255; 
+      u >>= 8;
   }
   u += h[16]; h[16] = u;
 }
