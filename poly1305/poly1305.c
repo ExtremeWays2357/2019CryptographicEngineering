@@ -80,11 +80,63 @@ static void mulmod(unsigned int h[17],const unsigned int r[17])
   squeeze(h);
 }
 
+static void convert_to_radix26(unsigned int source[17], unsigned int dest[5]){
+	//Assumption: only 8 lowest bits from source array are used.
+	dest[0] += (source[0]);
+	dest[0] += (source[1] >> 8);
+	dest[0] += (source[2] >> 16);
+	dest[0] += (source[3] >> 24) & 3; //Only care about 2 least significant bits
+
+	dest[1] += (source[3] << 2);
+	dest[1] += (source[4] >> 6);
+	dest[1] += (source[5] >> 14);
+	dest[1] += (source[6] >> 22) & 15;//Only care about 4 least significant bits
+
+	dest[2] += (source[6] << 4);
+	dest[2] += (source[7] >> 4);
+	dest[2] += (source[8] >> 12);
+	dest[2] += (source[9] >> 20) & 63;//Only care about 6 least significant bits
+	
+	dest[3] += (source[9] << 6);
+	dest[3] += (source[10] >> 2);
+	dest[3] += (source[11] >> 10);
+	dest[3] += (source[12] >> 18);
+
+	dest[4] += (source[13]);
+	dest[4] += (source[14] >> 8);
+	dest[4] += (source[15] >> 16);
+	dest[4] += (source[16] >> 24) & 3;//only care about 2 least significant bits
+}
+
+static void convert_to_bytearray(unsigned int source[5], unsigned int dest[17]){
+	dest[0] =  (source[0]) & 255;
+	dest[1] =  (source[0] << 8 ) & 255;
+	dest[2] =  (source[0] << 16) & 255;
+	dest[3] =  (source[0] << 24) & 3;//only care about 2 least significant bits
+	dest[3] += (source[1] >> 2 ) & 252;//only care bout 6 least signifacnt bits, but place them in upper part
+	dest[4] =  (source[1] << 6 ) & 255;
+	dest[5] =  (source[1] << 14) & 255;
+	dest[6] =  (source[1] << 22) & 15;//only care about 4 least significant bits
+	dest[6] += (source[2] >> 4 ) & 240; //only care about 4 least signifant bits, but place them in upper part
+	dest[7] =  (source[2] << 4 ) & 255;
+	dest[8] =  (source[2] << 12) & 255;
+	dest[9] =  (source[2] << 20) & 63;//only care about 6 bits
+	dest[9]+=  (source[3] >> 6 ) & 192;//only care about 2 bits
+	dest[10]=  (source[3] << 2 ) & 255;
+	dest[11]=  (source[3] << 10) & 255;
+	dest[12]=  (source[3] << 18) & 255;
+	dest[13]=  (source[4]) & 252;
+	dest[14]=  (source[4] >> 8 ) & 255;
+	dest[15]=  (source[4] >> 16) & 255;
+	dest[16]=  (source[4] >> 24) & 3; //only 2 lsb
+}
+
 int crypto_onetimeauth_poly1305(unsigned char *out,const unsigned char *in,unsigned long long inlen,const unsigned char *k)
 {
   unsigned int j;
   unsigned int r[17];
   unsigned int h[17];
+  //unsigned int h[5]
   unsigned int c[17];
 
   r[0] = k[0];
@@ -109,6 +161,12 @@ int crypto_onetimeauth_poly1305(unsigned char *out,const unsigned char *in,unsig
   for (j = 0;j < 17;++j) {
       h[j] = 0;//Convert h to radix 2^26
   }
+
+  /**
+   * for (j = 0; j < 5; j++){
+   *	h[j] = 0;
+   * }
+   */
 
   while (inlen > 0) {
     for (j = 0;j < 17;++j) {
