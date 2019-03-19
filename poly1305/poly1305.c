@@ -59,6 +59,19 @@ static void squeeze(unsigned int h[17])
 
 /**
  * een shell voor een squeeze in radix 26. Dit voegt carries toe bij elkaar oid. Ik denk dat t pas belangrijk is om een werkende sqeeze te hebben wanneer we een werkende mult hebben.
+
+
+Toevoeging door Marvin - Gelet op lecture van peter:
+ p = 2^130-5
+ dus
+ 2^130 == 5 (mod p)
+ dus
+ 2^131 == 10(mod p)
+ dus
+ for (i=0; i<15; i++)
+	r[i] += 10*r[i+16]
+
+	...ik weet nog niet hoe dit vertaalt naar squeeze...
  */
 static void squeeze26(unsigned int h[5])
 {
@@ -105,6 +118,31 @@ static void freeze(unsigned int h[17])
 
   }
 }
+
+
+static void mulmod26(unsigned int h[17],const unsigned int r[17])
+{
+/*
+   Modified code from the lecture for carries after multiplication (original code was radix 16. Did I rewrite it
+	correctly for radix 26, or do I need to also change the length of the loop?)
+   long long c
+   for(i=0;i<15;i++)
+   {
+      // shift by 26, because our radix is 26. It used to be 16, according to Peter, because radix was 16
+      c = r[i] >> 26;
+      r[i+1] += c;
+      c <<= 26;
+      r[i] -= c;
+   }
+   c = r[15] >> 26;
+   # reduce by 10, because 
+   r[0] += 10*c;
+   c <<= 26;
+   r[15] -= c
+*/
+}
+
+
 /**
  * Dit kunnen we niet simpel omschrijven, we moeten gewoon eigen multiplication arithmic gaan schrijven voor 2^26 multiplicatie :(
  */
