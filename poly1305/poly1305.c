@@ -73,7 +73,8 @@ Toevoeging door Marvin - Gelet op lecture van peter:
 
 	...ik weet nog niet hoe dit vertaalt naar squeeze...
 	
- Toevoeging Noël: dit is precies wat "u = 5 * (u >> 26);" doet, volgens mij.
+ Toevoeging Noël: dit is precies wat "u = 5 * (u >> 26);" doet, volgens mij. 
+ 2^130 is nml de carry bit, en voor iedere daarbuiten moet je dus 5 toevoegen.
  */
 static void squeeze26(unsigned int h[5])
 {
@@ -88,12 +89,11 @@ static void squeeze26(unsigned int h[5])
 
   //Deze laatste stap begrijp ik dus echt voor geen bal. Omdat we in radix 26 werken kunnen we de eerste 2 instructies volgens mij gewoon in de loop pleuren, maar die laatste is ??????????
   u += h[4]; 
+  //Reduce our result to a number < 2^130-5
   h[4] = u & 67108864;
-  // Dus wat de actual fuck doet dit???
-  // Als u een (of meerdere) carry had, dan is bit 27 en hoger mogelijk een 1.. Daarom kunnen we rotaten naar rechts met 26 om die carry bits te krijgen, en vermenigvuldigen we met 5 omdat
-  // dat ons reductiealgoritme is oid. Die voegen we dan toe bij de LSB van onze state.
   u = 5 * (u >> 26);
  
+  //The above operations could introduce additional carries, so we fix the carry again.
   for (j = 0;j < 5;++j) { 
       u += h[j]; 
       h[j] = u & 67108864; 
@@ -127,9 +127,12 @@ static void mulmod26(unsigned int h[17],const unsigned int r[17])
 /*
    Modified code from the lecture for carries after multiplication (original code was radix 16. Did I rewrite it
 	correctly for radix 26, or do I need to also change the length of the loop?)
+	
    Comments Noël (zonder dingen aan te passen, voor nu):
    	- Onze loop loopt niet over 15 elementen, want we hebben 5 26-bits getallen.
 	- Dit is enkel het toevoegen van carries, niet de multiplication zelf (toch?)
+   In feite gaan we denk ik nóg een squeeze maken, die unsigned long longs reduceert naar unsigned ints.
+   
    long long c
    for(i=0;i<15;i++)
    {
@@ -174,40 +177,43 @@ static void mulmod(unsigned int h[17],const unsigned int r[17])
   squeeze(h);
 }
 //een van de conversies faalt. Mogelijk allebei
+// >> = shift naar rechts.
+// << = shift naar links.
 static void convert_to_radix26(unsigned int source[17], unsigned int dest[5]){
 	//Assumption: only 8 lowest bits from source array are used.
 	dest[0]  = (source[0]);
-	dest[0] += (source[1] >> 8);
-	dest[0] += (source[2] >> 16);
-	dest[0] += (source[3] >> 24) & 3; //Only care about 2 least significant bits
+	dest[0] += (source[1] << 8);
+	dest[0] += (source[2] << 16);
+	dest[0] += (source[3] & 3) << 24); //Only care about 2 least significant bits
 
-	dest[1]  = (source[3] << 2);
-	dest[1] += (source[4] >> 6);
-	dest[1] += (source[5] >> 14);
-	dest[1] += (source[6] >> 22) & 15;//Only care about 4 least significant bits
+	dest[1]  = (source[3] >> 2);
+	dest[1] += (source[4] << 6);
+	dest[1] += (source[5] << 14);
+	dest[1] += (source[6] & 15) << 22;//Only care about 4 least significant bits
 
-	dest[2]  = (source[6] << 4);
-	dest[2] += (source[7] >> 4);
-	dest[2] += (source[8] >> 12);
-	dest[2] += (source[9] >> 20) & 63;//Only care about 6 least significant bits
+	dest[2]  = (source[6] >> 4);
+	dest[2] += (source[7] << 4);
+	dest[2] += (source[8] << 12);
+	dest[2] += (source[9] & 63) << 20;//Only care about 6 least significant bits
 	
-	dest[3]  = (source[9] << 6);
-	dest[3] += (source[10] >> 2);
-	dest[3] += (source[11] >> 10);
-	dest[3] += (source[12] >> 18);
+	dest[3]  = (source[9] >> 6);
+	dest[3] += (source[10] << 2);
+	dest[3] += (source[11] << 10);
+	dest[3] += (source[12] << 18);
 
 	dest[4]  = (source[13]);
-	dest[4] += (source[14] >> 8);
-	dest[4] += (source[15] >> 16);
-	dest[4] += (source[16] >> 24) & 3;//only care about 2 least significant bits
+	dest[4] += (source[14] << 8);
+	dest[4] += (source[15] << 16);
+	dest[4] += (source[16] & 3) << 24) ;//only care about 2 least significant bits
 }
+
 //volgens mij is dit 100% ruk, van rotatierichting tot de AND-values. Volgens mij moet alles de andere kant op.
 static void convert_to_bytearray(unsigned int source[5], unsigned int dest[17]){
 	dest[0] =  (source[0]) & 255;
 	dest[1] =  (source[0] >> 8 ) & 255;
 	dest[2] =  (source[0] >> 16) & 255;
 	dest[3] =  (source[0] >> 24) & 3;//only care about 2 least significant bits
-	dest[3] += (source[1] << 2 ) & 252;//only care bout 6 least signifacnt bits, but place them in upper part
+	dest[3] += (source[1] << 2 ) & 252;//only care about 6 least signifcant bits, but place them in upper part
 	dest[4] =  (source[1] >> 6 ) & 255;
 	dest[5] =  (source[1] >> 14) & 255;
 	dest[6] =  (source[1] >> 22) & 15;//only care about 4 least significant bits
