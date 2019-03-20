@@ -72,6 +72,8 @@ Toevoeging door Marvin - Gelet op lecture van peter:
 	r[i] += 10*r[i+16]
 
 	...ik weet nog niet hoe dit vertaalt naar squeeze...
+	
+ Toevoeging Noël: dit is precies wat "u = 5 * (u >> 26);" doet, volgens mij.
  */
 static void squeeze26(unsigned int h[5])
 {
@@ -125,6 +127,9 @@ static void mulmod26(unsigned int h[17],const unsigned int r[17])
 /*
    Modified code from the lecture for carries after multiplication (original code was radix 16. Did I rewrite it
 	correctly for radix 26, or do I need to also change the length of the loop?)
+   Comments Noël (zonder dingen aan te passen, voor nu):
+   	- Onze loop loopt niet over 15 elementen, want we hebben 5 26-bits getallen.
+	- Dit is enkel het toevoegen van carries, niet de multiplication zelf (toch?)
    long long c
    for(i=0;i<15;i++)
    {
