@@ -184,7 +184,7 @@ static void convert_to_radix26(unsigned int source[17], unsigned int dest[5]){
 	dest[0]  = (source[0]);
 	dest[0] += (source[1] << 8);
 	dest[0] += (source[2] << 16);
-	dest[0] += (source[3] & 3) << 24); //Only care about 2 least significant bits
+	dest[0] += (source[3] & 3) << 24; //Only care about 2 least significant bits
 
 	dest[1]  = (source[3] >> 2);
 	dest[1] += (source[4] << 6);
@@ -204,7 +204,7 @@ static void convert_to_radix26(unsigned int source[17], unsigned int dest[5]){
 	dest[4]  = (source[13]);
 	dest[4] += (source[14] << 8);
 	dest[4] += (source[15] << 16);
-	dest[4] += (source[16] & 3) << 24) ;//only care about 2 least significant bits
+	dest[4] += (source[16] & 3) << 24 ;//only care about 2 least significant bits
 }
 
 //volgens mij is dit 100% ruk, van rotatierichting tot de AND-values. Volgens mij moet alles de andere kant op.
@@ -239,7 +239,7 @@ int crypto_onetimeauth_poly1305(unsigned char *out,const unsigned char *in,unsig
   unsigned int tmp[5];
   unsigned int tmp2[5];
   unsigned int c[17];
-
+  printf("Hello, World\n");
   r[0] = k[0];
   r[1] = k[1];
   r[2] = k[2];
