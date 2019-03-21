@@ -29,7 +29,7 @@ static void add26(unsigned int h[5],const unsigned int c[5])
   u = 0;
   for (j = 0;j < 5;++j) {
       u += h[j] + c[j]; 
-      h[j] = u & 67108864; 
+      h[j] = u & 67108863; 
       u >>= 26; 
   }
 }
@@ -263,6 +263,7 @@ int crypto_onetimeauth_poly1305(unsigned char *out,const unsigned char *in,unsig
       h[j] = 0;//Convert h to radix 2^26
   }
   //convert_to_radix26(h, tmp);
+  //printf("Hello, World!");
   //convert_to_bytearray(tmp, h);
 
   /**
@@ -287,8 +288,12 @@ int crypto_onetimeauth_poly1305(unsigned char *out,const unsigned char *in,unsig
     in += j; inlen -= j;
     
     convert_to_radix26(h, tmp);
-    convert_to_bytearray(tmp, h);
-    add(h,c);
+	 convert_to_radix26(c, tmp2);
+    //convert_to_bytearray(tmp, h);
+	 add26(tmp,tmp2);
+    //add(h,c);
+	 convert_to_bytearray(tmp, h);
+	 convert_to_bytearray(tmp2,c);
     mulmod(h,r);
   }
 
