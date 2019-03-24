@@ -183,10 +183,10 @@ static void mulmod(unsigned int h[17],const unsigned int r[17])
 static unsigned long
 U8TO26(const unsigned char *p, char offset, char AND) {
 	return
-		(((unsigned long)((p[0] >> offset)  & 0xff)      ) +
-	     ((unsigned long)(p[1] & 0xff) <<  (8-offset))  +
-         ((unsigned long)(p[2] & 0xff) << (16-offset)) +
-         ((unsigned long)(p[3] & AND) << (24-offset))); 
+	(((unsigned long)((p[0] >> offset)  & 0xff))		+
+	((unsigned long)(p[1] & 0xff) <<  (8-offset))		+
+	((unsigned long)(p[2] & 0xff) << (16-offset))		+
+	((unsigned long)(p[3] & AND) << (24-offset))); 
 }
 
 /* Adapted from https://github.com/floodyberry/poly1305-donna/blob/master/poly1305-donna-32.h. */
@@ -214,11 +214,11 @@ static void convert_to_radix26(unsigned int source[17], unsigned int dest[5]){
 		dest[4] = U8TO26(&source[13])
 		But this obviously wouldnt work, as we cannot put the offset right...(we cannot do &source[3]+0.25).
 	*/
-	   dest[0] = U8TO26((char*) &source[0],0, 3);
-      dest[1] = U8TO26((char*) &source[3],2, 15);
-      dest[2] = U8TO26((char*) &source[6],4, 63);
-      dest[3] = U8TO26((char*) &source[9],6, 255);
-      dest[4] = U8TO26((char*) &source[13],0,3);
+	dest[0] = U8TO26((char*) &source[0],0, 3);
+	dest[1] = U8TO26((char*) &source[3],2, 15);
+	dest[2] = U8TO26((char*) &source[6],4, 63);
+	dest[3] = U8TO26((char*) &source[9],6, 255);
+	dest[4] = U8TO26((char*) &source[13],0,3);
 
 	/*
 	dest[0]  = (source[0]);
