@@ -176,11 +176,51 @@ static void mulmod(unsigned int h[17],const unsigned int r[17])
   }
   squeeze(h);
 }
+
+// Putting these here for inspiratio, nothing else.
+/* Adapted from https://github.com/floodyberry/poly1305-donna/blob/master/poly1305-donna-32.h. */
+/* interpret four 8 bit unsigned integers as a 26 bit unsigned integer in little endian */
+static unsigned long
+U8TO26(const unsigned char *p, char offset, char AND) {
+	return
+		(((unsigned long)((p[0] >> offset)  & 0xff)      ) +
+	     ((unsigned long)(p[1] & 0xff) <<  (8-offset))  +
+         ((unsigned long)(p[2] & 0xff) << (16-offset)) +
+         ((unsigned long)(p[3] & AND) << (24-offset))); 
+}
+
+/* Adapted from https://github.com/floodyberry/poly1305-donna/blob/master/poly1305-donna-32.h. */
+/* store a 26 bit unsigned integer as four 8 bit unsigned integers in little endian */
+/* Could adapt this function easily so that it also returns stuff */
+static void
+U26TO8(unsigned char *p, unsigned long v) {
+	p[0] = (v      ) & 0xff;
+	p[1] = (v >>  8) & 0xff;
+	p[2] = (v >> 16) & 0xff;
+	p[3] = (v >> 24) & 0x3;
+}
+
+
 //een van de conversies faalt. Mogelijk allebei
 // >> = shift naar rechts.
 // << = shift naar links.
 static void convert_to_radix26(unsigned int source[17], unsigned int dest[5]){
-	//Assumption: only 8 lowest bits from source array are used.
+	// My original idea inspired by the github 32-bit implementation was something like:
+	/*
+		dest[0] = U8TO26(&source[0])
+		dest[1] = U8TO26(&source[3]+offset)
+		dest[2] = U8TO26(&source[6]+offset)
+		dest[3] = U8TO26(&source[9]+offset)
+		dest[4] = U8TO26(&source[13])
+		But this obviously wouldnt work, as we cannot put the offset right...(we cannot do &source[3]+0.25).
+	*/
+	   dest[0] = U8TO26((char*) &source[0],0, 3);
+      dest[1] = U8TO26((char*) &source[3],2, 15);
+      dest[2] = U8TO26((char*) &source[6],4, 63);
+      dest[3] = U8TO26((char*) &source[9],6, 255);
+      dest[4] = U8TO26((char*) &source[13],0,3);
+
+	/*
 	dest[0]  = (source[0]);
 	dest[0] += (source[1] << 8);
 	dest[0] += (source[2] << 16);
@@ -199,12 +239,13 @@ static void convert_to_radix26(unsigned int source[17], unsigned int dest[5]){
 	dest[3]  = (source[9] >> 6);
 	dest[3] += (source[10] << 2);
 	dest[3] += (source[11] << 10);
-	dest[3] += (source[12] << 18);
+	dest[3] += (source[12] << 18); 
 
 	dest[4]  = (source[13]);
 	dest[4] += (source[14] << 8);
 	dest[4] += (source[15] << 16);
 	dest[4] += (source[16] & 3) << 24 ;//only care about 2 least significant bits
+	*/
 }
 
 //volgens mij is dit 100% ruk, van rotatierichting tot de AND-values. Volgens mij moet alles de andere kant op.
