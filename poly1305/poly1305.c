@@ -180,18 +180,19 @@ static void mulmod(unsigned int h[17],const unsigned int r[17])
 // Putting these here for inspiratio, nothing else.
 /* Adapted from https://github.com/floodyberry/poly1305-donna/blob/master/poly1305-donna-32.h. */
 /* interpret four 8 bit unsigned integers as a 26 bit unsigned integer in little endian */
-static unsigned long
-U8TO26(const unsigned char *p, char offset, char AND) {
+static unsigned int
+U8TO26(const unsigned int *p, unsigned char offset, unsigned char AND) {
 	return
-	(((unsigned long)((p[0] >> offset)  & 0xff))		+
-	((unsigned long)(p[1] & 0xff) <<  (8-offset))		+
-	((unsigned long)(p[2] & 0xff) << (16-offset))		+
-	((unsigned long)(p[3] & AND) << (24-offset))); 
+	(((unsigned int)((p[0] >> offset)  & 0xff))		+
+	((unsigned int)(p[1] & 0xff) <<  (8-offset))		+
+	((unsigned int)(p[2] & 0xff) << (16-offset))		+
+	((unsigned int)(p[3] & AND) << (24-offset))); 
 }
 
-/* Adapted from https://github.com/floodyberry/poly1305-donna/blob/master/poly1305-donna-32.h. */
-/* store a 26 bit unsigned integer as four 8 bit unsigned integers in little endian */
-/* Could adapt this function easily so that it also returns stuff */
+/* From https://github.com/floodyberry/poly1305-donna/blob/master/poly1305-donna-32.h. */
+/* This function is not adapted, it wouldn't work if used like this. 
+v should probably be unsigned int, and so should p. Then we fill p[0]-p[3] with bytes. However, there is still the offsett to deal with
+(in Noëls function, we hardcode the offset. They would be functionally equivalent). */
 static void
 U26TO8(unsigned char *p, unsigned long v) {
 	p[0] = (v      ) & 0xff;
@@ -214,11 +215,11 @@ static void convert_to_radix26(unsigned int source[17], unsigned int dest[5]){
 		dest[4] = U8TO26(&source[13])
 		But this obviously wouldnt work, as we cannot put the offset right...(we cannot do &source[3]+0.25).
 	*/
-	dest[0] = U8TO26((char*) &source[0],0, 3);
-	dest[1] = U8TO26((char*) &source[3],2, 15);
-	dest[2] = U8TO26((char*) &source[6],4, 63);
-	dest[3] = U8TO26((char*) &source[9],6, 255);
-	dest[4] = U8TO26((char*) &source[13],0,3);
+	dest[0] = U8TO26( &source[0],0, 3);
+	dest[1] = U8TO26( &source[3],2, 15);
+	dest[2] = U8TO26( &source[6],4, 63);
+	dest[3] = U8TO26( &source[9],6, 255);
+	dest[4] = U8TO26( &source[13],0,3);
 
 	/*
 	dest[0]  = (source[0]);
