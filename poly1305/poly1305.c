@@ -281,7 +281,6 @@ int crypto_onetimeauth_poly1305(unsigned char *out,const unsigned char *in,unsig
   unsigned int tmp[5];
   unsigned int tmp2[5];
   unsigned int c[17];
-  printf("Hello, World\n");
   r[0] = k[0];
   r[1] = k[1];
   r[2] = k[2];
@@ -305,7 +304,6 @@ int crypto_onetimeauth_poly1305(unsigned char *out,const unsigned char *in,unsig
       h[j] = 0;//Convert h to radix 2^26
   }
   //convert_to_radix26(h, tmp);
-  //printf("Hello, World!");
   //convert_to_bytearray(tmp, h);
 
   /**

@@ -17,4 +17,5 @@ poly1305speed.elf: poly1305.o poly1305.h speed.o $(OBJS) $(LDSCRIPT)
 
 include ../common/make.mk
 
-
+x86:
+	gcc poly1305.c poly1305.h testx86.c -o polyx86.out
