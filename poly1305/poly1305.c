@@ -121,9 +121,40 @@ static void freeze(unsigned int h[17])
   }
 }
 
-
-static void mulmod26(unsigned int h[17],const unsigned int r[17])
+/*
+	Source: http://loup-vaillant.fr/tutorials/poly1305-design
+*/
+uint64_t propagate_carry(uint64_t p[5], uint64_t carry)
 {
+    p[0] += carry * 5;  carry = p[0] >> 26;  p[0] -= carry << 26;
+    p[1] += carry    ;  carry = p[1] >> 26;  p[1] -= carry << 26;
+    p[2] += carry    ;  carry = p[2] >> 26;  p[2] -= carry << 26;
+    p[3] += carry    ;  carry = p[3] >> 26;  p[3] -= carry << 26;
+    p[4] += carry    ;  carry = p[4] >> 26;  p[4] -= carry << 26;
+    return carry;
+}
+
+/*
+	Source: http://loup-vaillant.fr/tutorials/poly1305-design
+*/
+static void mulmod26(uint64_t p[5], const uint32_t a[5], const uint32_t b[5])
+{
+	uint64_t a0 = a[0];  uint64_t b0 = b[0];
+	uint64_t a1 = a[1];  uint64_t b1 = b[1];  uint64_t b51 = b[1] * 5;
+	uint64_t a2 = a[2];  uint64_t b2 = b[2];  uint64_t b52 = b[2] * 5;
+	uint64_t a3 = a[3];  uint64_t b3 = b[3];  uint64_t b53 = b[3] * 5;
+	uint64_t a4 = a[4];  uint64_t b4 = b[4];  uint64_t b54 = b[4] * 5;
+	p[0] = a0*b0 + a1*b54 + a2*b53 + a3*b52 + a4*b51;
+	p[1] = a0*b1 + a1*b0  + a2*b54 + a3*b53 + a4*b52;
+	p[2] = a0*b2 + a1*b1  + a2*b0  + a3*b54 + a4*b53;
+	p[3] = a0*b3 + a1*b2  + a2*b1  + a3*b0  + a4*b54;
+	p[4] = a0*b4 + a1*b3  + a2*b2  + a3*b1  + a4*b0 ;
+
+	/* This loop is prone to timing attacks, according to source. May need to unroll */
+	uint64_t carry = 0;
+	do {
+    		carry = propagate_carry(p, carry);
+	} while (carry != 0);
 /*
    Modified code from the lecture for carries after multiplication (original code was radix 16. Did I rewrite it
 	correctly for radix 26, or do I need to also change the length of the loop?)
