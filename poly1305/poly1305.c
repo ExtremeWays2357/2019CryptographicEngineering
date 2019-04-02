@@ -5,6 +5,7 @@ Public domain.
 */
 
 #include "poly1305.h"
+#include <stdint.h>
 
 static void add(unsigned int h[17],const unsigned int c[17])
 {
