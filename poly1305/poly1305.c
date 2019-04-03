@@ -359,14 +359,14 @@ int crypto_onetimeauth_poly1305(unsigned char *out,const unsigned char *in,unsig
      * */
     in += j; inlen -= j;
     
-    convert_to_radix26(h, tmp);
-	 convert_to_radix26(c, tmp2);
-    //convert_to_bytearray(tmp, h);
-	 add26(tmp,tmp2);
-    //add(h,c);
-	 convert_to_bytearray(tmp, h);
-	 convert_to_bytearray(tmp2,c);
-    mulmod(h,r);
+	//convert_to_radix26(h, tmp);
+	//convert_to_radix26(c, tmp2);
+	//convert_to_bytearray(tmp, h);
+	//add26(tmp,tmp2);
+	//convert_to_bytearray(tmp, h);
+	//convert_to_bytearray(tmp2,c);
+	add(h,c);
+	mulmod(h,r);
   }
 
   freeze(h);
